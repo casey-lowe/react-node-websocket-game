@@ -1,8 +1,11 @@
 import { width, height } from '../../constants/connectFour';
+import { useConnectFourContext } from '../../contexts/ConnectFour';
 import { getElementIdFromRowCol } from '../../utils/connectFour';
 
 const Board = () => {
-  const handleClick = (col: number) => {};
+  const { addBallToColumn } = useConnectFourContext();
+
+  const handleClick = (col: number) => addBallToColumn(col);
 
   return (
     <div id="style1">

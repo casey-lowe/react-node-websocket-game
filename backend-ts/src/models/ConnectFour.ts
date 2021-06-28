@@ -13,10 +13,16 @@ export class ConnectFour {
   }
 
   private switchColor(): Color {
-    return this.currentColor === Color.Blue ? Color.Red : Color.Blue;
+    this.currentColor = this.currentColor === Color.Blue ? Color.Red : Color.Blue;
+    return this.currentColor;
+  }
+
+  getCurrentColor(): Color {
+    return this.currentColor;
   }
 
   reset(): void {
+    this.board = [];
     for (let i = 0; i < width; i++) {
       this.board.push([]);
     }
@@ -35,17 +41,15 @@ export class ConnectFour {
 
     // the position new ball is added
     const addedPosition = {
-      row: height - this.board[col].length - 1,
+      row: height - this.board[col].length,
       col,
     };
     const addedColor = this.currentColor;
 
-    this.switchColor();
-
     return {
-      addedPosition: addedPosition,
+      addedPosition,
       addedColor,
-      currentColor: this.currentColor,
+      currentColor: this.switchColor(),
     };
   }
 
@@ -63,7 +67,22 @@ export class ConnectFour {
     }
 
     this.players.push(player);
+    this.displayPlayers();
+
     return player;
+  }
+
+  removePlayer(color: Color) {
+    const idx = this.players.indexOf(color);
+    if (idx === -1) {
+      return;
+    }
+    this.players.splice(idx, 1);
+    this.displayPlayers();
+  }
+
+  displayPlayers() {
+    console.log('players', this.players);
   }
 }
 

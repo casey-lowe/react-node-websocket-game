@@ -1,9 +1,23 @@
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { Color } from '../types/ConnectFour';
+import { Color, ColorClass } from '../types/ConnectFour';
 import { getElementIdFromRowCol } from '../utils/connectFour';
 
-export const useConnectFour = () => {
+interface ConnectFourContextInterface {
+  myColor: Color | null;
+  currentColor: Color | null;
+  addBallToColumn(col: number): void;
+  reset(): void;
+}
+
+const ConnectFourContext = createContext<ConnectFourContextInterface>({
+  myColor: null,
+  currentColor: null,
+  addBallToColumn(col) {},
+  reset() {},
+});
+
+export const ConnectFourContextProvider = ({ children }: { children: JSX.Element }) => {
   const [myColor, setMyColor] = useState<Color | null>(null);
   const [currentColor, setCurrentColor] = useState<Color | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -15,26 +29,35 @@ export const useConnectFour = () => {
     skt.on('connect', () => console.log(`socket connected: ${skt.id}`));
 
     skt.on('connect_error', () => {
-      setTimeout(() => skt.connect(), 5000);
+      setTimeout(() => skt.connect(), 2000);
     });
 
-    skt.on('my-color', (color: Color) => {
-      console.log(`my color is: ${color}`);
-      setMyColor(color);
-    });
+    skt.on(
+      'role-color',
+      ({
+        myColor: mColor,
+        currentColor: curColor,
+      }: {
+        myColor: Color | null;
+        currentColor: Color;
+      }) => {
+        setMyColor(mColor);
+        setCurrentColor(curColor);
+      }
+    );
 
     skt.on(
       'add-ball',
       ({
         addedPosition,
         addedColor,
-        currentColor: color,
+        currentColor: curColor,
       }: {
         addedPosition: { row: number; col: number };
         addedColor: Color;
         currentColor: Color;
       }) => {
-        setCurrentColor(color);
+        setCurrentColor(curColor);
 
         const elementId = getElementIdFromRowCol(addedPosition);
         const element = document.getElementById(elementId);
@@ -46,7 +69,7 @@ export const useConnectFour = () => {
 
         const newDiv = document.createElement('div');
         newDiv.classList.add('style4');
-        newDiv.classList.add(addedColor);
+        newDiv.classList.add(ColorClass[addedColor]);
 
         element.appendChild(newDiv);
       }
@@ -57,11 +80,27 @@ export const useConnectFour = () => {
     });
 
     skt.on('disconnect', () => console.log(`socket disconnected: ${skt.id}`));
+
+    return () => {
+      skt.disconnect();
+    };
   }, []);
 
   const addBallToColumn = (col: number) => {
     socket?.emit('add-ball-to-column', col);
   };
 
-  return { myColor, currentColor, addBallToColumn };
+  const reset = () => {
+    socket?.emit('reset');
+  };
+
+  return (
+    <ConnectFourContext.Provider value={{ myColor, currentColor, addBallToColumn, reset }}>
+      {children}
+    </ConnectFourContext.Provider>
+  );
 };
+
+export const useConnectFourContext = () => useContext(ConnectFourContext);
+
+export default ConnectFourContext;

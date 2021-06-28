@@ -1,15 +1,17 @@
 import Header from './Header';
 import Board from './Board';
-import { useConnectFour } from '../../hooks/useConnectFour';
+import Actions from './Actions';
+import { ConnectFourContextProvider } from '../../contexts/ConnectFour';
 
 const ConnectFour = () => {
-  const { currentColor } = useConnectFour();
-
   return (
-    <>
-      {!!currentColor && <Header />}
-      <Board />
-    </>
+    <ConnectFourContextProvider>
+      <>
+        <Header />
+        <Board />
+        <Actions />
+      </>
+    </ConnectFourContextProvider>
   );
 };
 
