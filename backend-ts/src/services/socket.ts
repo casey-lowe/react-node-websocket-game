@@ -6,6 +6,8 @@ export const connection = (socket: Socket) => {
 
   emitRoleColor(socket);
 
+  socket.on('reset', () => reset(socket));
+
   socket.on('add-ball', (data) => addBall(socket, data));
 
   socket.on('disconnect', (reason) => {
@@ -20,5 +22,10 @@ const emitRoleColor = (socket: Socket) => {
 
 const addBall = (socket: Socket, { column }: { column: number }) => {
   const { addedPosition, addedColor, currentColor } = connectFour.addBall(column);
-  socket.broadcast.emit('added-ball', { addedPosition, addedColor, currentColor });
+  socket.broadcast.emit('add-ball', { addedPosition, addedColor, currentColor });
+};
+
+const reset = (socket: Socket) => {
+  connectFour.reset();
+  socket.broadcast.emit('reset');
 };

@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server as SocketServer } from 'socket.io';
-import { connection } from './services';
+import { connection } from './services/socket';
 
 const app = express();
 app.use(express.json());

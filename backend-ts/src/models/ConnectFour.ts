@@ -1,4 +1,4 @@
-import { Color } from '../types';
+import { Color } from '../types/ConnectFour';
 
 const width = 7;
 const height = 6;
@@ -9,18 +9,18 @@ export class ConnectFour {
   private players: Color[] = [];
 
   constructor() {
-    this.resetMap();
-    this.players = [];
+    this.reset();
   }
 
   private switchColor(): Color {
     return this.currentColor === Color.Blue ? Color.Red : Color.Blue;
   }
 
-  resetMap(): void {
+  reset(): void {
     for (let i = 0; i < width; i++) {
       this.board.push([]);
     }
+    this.currentColor = this.players[0] || Color.Blue;
   }
 
   addBall(column: number): {
