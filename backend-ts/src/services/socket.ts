@@ -8,7 +8,7 @@ export const connection = (socket: Socket) => {
 
   socket.on('reset', () => reset(socket));
 
-  socket.on('add-ball', (data) => addBall(socket, data));
+  socket.on('add-ball-to-column', (col: number) => addBallToColumn(socket, col));
 
   socket.on('disconnect', (reason) => {
     console.log(`socket client disconnected: ${socket.id} - ${reason}`);
@@ -20,8 +20,8 @@ const emitRoleColor = (socket: Socket) => {
   socket.emit('my-color', playerColor);
 };
 
-const addBall = (socket: Socket, { column }: { column: number }) => {
-  const { addedPosition, addedColor, currentColor } = connectFour.addBall(column);
+const addBallToColumn = (socket: Socket, col: number) => {
+  const { addedPosition, addedColor, currentColor } = connectFour.addBallToColumn(col);
   socket.broadcast.emit('add-ball', { addedPosition, addedColor, currentColor });
 };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { Color } from '../types/ConnectFour';
-import { width } from '../constants/connectFour';
+import { getElementIdFromRowCol } from '../utils/connectFour';
 
 export const useConnectFour = () => {
   const [myColor, setMyColor] = useState<Color | null>(null);
@@ -30,17 +30,17 @@ export const useConnectFour = () => {
         addedColor,
         currentColor: color,
       }: {
-        addedPosition: [number, number];
+        addedPosition: { row: number; col: number };
         addedColor: Color;
         currentColor: Color;
       }) => {
         setCurrentColor(color);
 
-        const id = addedPosition[0] * width + addedPosition[1];
-        const element = document.getElementById(`element-${id}`);
+        const elementId = getElementIdFromRowCol(addedPosition);
+        const element = document.getElementById(elementId);
 
         if (!element) {
-          console.error(`error: element-${id} not found`);
+          console.error(`error: ${elementId} not found`);
           return;
         }
 
@@ -59,5 +59,9 @@ export const useConnectFour = () => {
     skt.on('disconnect', () => console.log(`socket disconnected: ${skt.id}`));
   }, []);
 
-  return { myColor, currentColor };
+  const addBallToColumn = (col: number) => {
+    socket?.emit('add-ball-to-column', col);
+  };
+
+  return { myColor, currentColor, addBallToColumn };
 };

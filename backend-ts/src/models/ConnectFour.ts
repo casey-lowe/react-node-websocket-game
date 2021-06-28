@@ -23,18 +23,21 @@ export class ConnectFour {
     this.currentColor = this.players[0] || Color.Blue;
   }
 
-  addBall(column: number): {
-    addedPosition: [number, number];
+  addBallToColumn(col: number): {
+    addedPosition: { row: number; col: number };
     addedColor: Color;
     currentColor: Color;
   } {
     // todo: limit height
 
     // add ball to map
-    this.board[column].push(this.currentColor);
+    this.board[col].push(this.currentColor);
 
     // the position new ball is added
-    const addedPosition: [number, number] = [height - this.board[column].length - 1, column]; // order is [top -> bottom, left -> right]
+    const addedPosition = {
+      row: height - this.board[col].length - 1,
+      col,
+    };
     const addedColor = this.currentColor;
 
     this.switchColor();
