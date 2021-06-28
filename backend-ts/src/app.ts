@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server as SocketServer } from 'socket.io';
+import { connection } from './services';
 
 const app = express();
 app.use(express.json());
@@ -19,4 +20,4 @@ app.listen(3001, function () {
   console.log('Example app listening on port 3001!');
 });
 
-io.on('connection', (socket) => {});
+io.on('connection', connection);

@@ -5,10 +5,12 @@ const height = 6;
 
 export class ConnectFour {
   private currentColor: Color = Color.Blue;
-  private map: Color[][] = []; // order is [left -> right][bottom -> top]
+  private board: Color[][] = []; // order is [left -> right][bottom -> top]
+  private players: Color[] = [];
 
   constructor() {
     this.resetMap();
+    this.players = [];
   }
 
   private switchColor(): Color {
@@ -17,31 +19,49 @@ export class ConnectFour {
 
   resetMap(): void {
     for (let i = 0; i < width; i++) {
-      this.map.push([]);
+      this.board.push([]);
     }
   }
 
   addBall(column: number): {
-    color: Color;
-    position: [number, number];
+    addedPosition: [number, number];
+    addedColor: Color;
+    currentColor: Color;
   } {
     // todo: limit height
 
     // add ball to map
-    this.map[column].push(this.currentColor);
+    this.board[column].push(this.currentColor);
 
     // the position new ball is added
-    const addedPosition: [number, number] = [height - this.map[column].length - 1, column]; // order is [top -> bottom, left -> right]
+    const addedPosition: [number, number] = [height - this.board[column].length - 1, column]; // order is [top -> bottom, left -> right]
+    const addedColor = this.currentColor;
 
     this.switchColor();
 
     return {
-      color: this.currentColor,
-      position: addedPosition,
+      addedPosition: addedPosition,
+      addedColor,
+      currentColor: this.currentColor,
     };
   }
 
-  getCurrentColor(): Color {
-    return this.currentColor;
+  addPlayer(): Color | null {
+    if (this.players.length === 2) {
+      return null;
+    }
+
+    let player: Color;
+
+    if (!this.players.length) {
+      player = Color.Blue;
+    } else {
+      player = this.players[0] === Color.Blue ? Color.Red : Color.Blue;
+    }
+
+    this.players.push(player);
+    return player;
   }
 }
+
+export default new ConnectFour();
